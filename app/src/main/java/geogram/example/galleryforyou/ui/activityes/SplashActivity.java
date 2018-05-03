@@ -1,11 +1,9 @@
-package geogram.example.galleryforyou.ui.activities;
+package geogram.example.galleryforyou.ui.activityes;
 
 import android.content.Intent;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import geogram.example.galleryforyou.R;
 
 public class SplashActivity extends AppCompatActivity {
 

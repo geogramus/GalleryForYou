@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">GalleryForYou</string>
+    <string name="app_name">Твоя галерея</string>
+    <string name="action_about">О авторе</string>
+    <string name="auto">Авто</string>
+    <string name="nature">Природа</string>
+    <string name="art">Искусство</string>
+    <string name="image_count">Image Count</string>
 </resources>
