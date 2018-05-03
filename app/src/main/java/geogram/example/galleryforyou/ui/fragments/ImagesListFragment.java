@@ -30,7 +30,7 @@ import geogram.example.galleryforyou.rest.models.Item;
  * Created by geogr on 03.05.2018.
  */
 
-public class ImagesListFragment extends Fragment implements ImageListView, SwipeRefreshLayout.OnRefreshListener, View.OnTouchListener{
+public class ImagesListFragment extends Fragment implements ImageListView, SwipeRefreshLayout.OnRefreshListener, View.OnTouchListener {
     @BindView(R.id.imageList)
     RecyclerView listView;
     @BindView(R.id.textCount)
@@ -44,11 +44,13 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
     private String type;
     private int total = 0;
     private final int gridColumn = 2;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.content_main, container, false);
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -72,14 +74,14 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
             adapter = new ImageListAdapter();
             listView.setAdapter(adapter);
             if (getInternetConnection()) {//проверяем интернет соединение
-
+                presenter.deleteAllItemsFromDatabase(type);
                 presenter.getPosts(startOffset, type);
                 //получаем новый список картинок с сервера
                 loadStart = true;
             } else {
                 Toast.makeText(getContext(), getString(R.string.check_internet_connetction), Toast.LENGTH_LONG).show();
                 //предупреждаем пользователя огб отсутствии интернета
-
+                presenter.getItemsFromBD(type);
             }
 
         } else {
@@ -110,10 +112,11 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
     @Override
     public void onRefresh() {
         if (getInternetConnection()) {//проверяем интернет соединение
+            presenter.deleteAllItemsFromDatabase(type);
             adapter.clear();
             loadStart = true;
             presenter.getPosts(startOffset, type);//получаем список из интернета
-        }else {
+        } else {
             Toast.makeText(getContext(), getString(R.string.check_internet_connetction), Toast.LENGTH_LONG).show();
             swipeRefreshLayout.setRefreshing(false);//выдаем ошибку о отсутствии интернета
         }
@@ -125,7 +128,7 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
     }
 
     @Override
-    public void addNewItems(List<Item> items, int total) {
+    public void addNewItems(List<Item> items, int total) {//добавление новых картинок в список при удачном результате запроса
         this.total = total;
         adapter.addAll(items);
         textCount.setText(String.format("%s %s", String.valueOf(total), getString(R.string.photoString)));
@@ -136,7 +139,7 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
 
     @Override
     public void error() {
-        Toast.makeText(getContext(),  getString(R.string.load_error), Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), getString(R.string.load_error), Toast.LENGTH_LONG).show();
         //ошибка загрузки изображений с сервера
         swipeRefreshLayout.setRefreshing(false);
         loadStart = false;
