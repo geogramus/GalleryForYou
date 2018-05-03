@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">Твоя галерея</string>
     <string name="action_about">О авторе</string>
+    <string name="photoString"> фото. Диск</string>
     <string name="auto">Авто</string>
     <string name="nature">Природа</string>
     <string name="art">Искусство</string>
     <string name="image_count">Image Count</string>
+    <string name="check_internet_connetction">Проверьте подключение к интернету</string>
+    <string name="load_error">Ошибка загрузки</string>
 </resources>
