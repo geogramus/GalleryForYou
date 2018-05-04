@@ -27,11 +27,16 @@
         <activity
             android:name=".ui.activityes.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".ui.activityes.SingleImageActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activityes.SingleImageActivity"
             android:label=""
             android:parentActivityName=".ui.activityes.MainActivity"
             tools:targetApi="jelly_bean" />
+        <activity android:name=".ui.activityes.AboutActivity"
+            android:label="@string/action_about"
+            android:parentActivityName=".ui.activityes.MainActivity"
+            tools:targetApi="jelly_bean"/>
     </application>
 
 </manifest>
