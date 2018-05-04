@@ -52,4 +52,8 @@ dependencies {
 
     compile 'com.squareup.picasso:picasso:2.5.2'
 
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile "org.mockito:mockito-core:2.8.47"
+    androidTestCompile 'org.mockito:mockito-android:2.7.22'
+
 }

@@ -1,5 +1,6 @@
 package geogram.example.galleryforyou.ui.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -26,6 +27,7 @@ import geogram.example.galleryforyou.R;
 import geogram.example.galleryforyou.adapters.ImageListAdapter;
 import geogram.example.galleryforyou.mvp.presenters.ImageListPresenter;
 import geogram.example.galleryforyou.mvp.views.ImageListView;
+import geogram.example.galleryforyou.rest.DataSource;
 import geogram.example.galleryforyou.rest.models.Item;
 import geogram.example.galleryforyou.ui.activityes.SingleImageActivity;
 
@@ -60,6 +62,7 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
         outState.putString("key", "key");
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -73,7 +76,8 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
             //проверяем фрагмент: первый ли этого его запуск, при перевороте экрана или перекрытии
             //в onSaveInstanceState помещаем ключ чтобы при восстановлении фрагментам выполнить
             // необходимый сценарий восстановления фрагмента, а не его пересоздание
-            presenter = new ImageListPresenter(this);
+            DataSource dataSource=new DataSource();
+            presenter = new ImageListPresenter(this, dataSource);
             adapter = new ImageListAdapter();
             listView.setAdapter(adapter);
             if (getInternetConnection()) {//проверяем интернет соединение
@@ -110,6 +114,7 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
         });
 
         listView.setOnTouchListener(this);
+
     }
 
     @Override
@@ -151,7 +156,7 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
         listView.setLayoutManager(null);
         listView = null;
         adapter = null;
-        presenter.unregister();
+        presenter.onStop();
     }
 
     @Override

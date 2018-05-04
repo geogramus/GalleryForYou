@@ -2,16 +2,13 @@ package geogram.example.galleryforyou.mvp.presenters;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
-import geogram.example.galleryforyou.MyApplication;
 import geogram.example.galleryforyou.mvp.views.ImageListView;
-import geogram.example.galleryforyou.rest.api.ImageService;
+import geogram.example.galleryforyou.rest.DataSourceContract;
+
 import geogram.example.galleryforyou.rest.models.Item;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import io.realm.Realm;
-import io.realm.RealmResults;
+
+import io.reactivex.disposables.Disposable;
+
 
 /**
  * Created by geogr on 03.05.2018.
@@ -19,66 +16,55 @@ import io.realm.RealmResults;
 
 public class ImageListPresenter {
 
-
     private ImageListView fragment;
-    private final String itemtype = "itemtype";
+    private DataSourceContract dataSource;
+    private Disposable dispossable;
 
-    public ImageListPresenter(ImageListView fragment) {
-        MyApplication.getsApplicationComponent().inject(this);
+    public ImageListPresenter(ImageListView fragment, DataSourceContract dataSource) {
+        this.dataSource = dataSource;
         this.fragment = fragment;
     }
 
-    @Inject
-    ImageService service;
 
+    public void onStop() {
+        if (dispossable != null && !dispossable.isDisposed()) {
+            dispossable.dispose();
+        }
+    }
 
     public void getPosts(int offset, String type) {
 
-        service.get_posts(type, offset)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(generalModel -> {
-                    if (generalModel != null) {
-                        List<Item> list = generalModel.getEmbedded().getItems();
-                        int total = generalModel.getEmbedded().getTotal();
-                        if (list.size() != 0) {
-                            addItemsToDB(list, type);
-                            fragment.addNewItems(list, total);
-                        }
-                    }
-                }, throwable -> fragment.error());
+        dispossable = dataSource.getPosts(offset, type, new DataSourceContract.CallbackInternet() {
+            @Override
+            public void onSucces(List<Item> list, int total) {
+                onSuccesGettingItems(list, total);
+            }
+
+            @Override
+            public void onFaild(Throwable e) {
+                onErrorGettingItems();
+            }
+        });
 
     }
 
     public void deleteAllItemsFromDatabase(String type) {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Item> realmList = realm.where(Item.class).equalTo(itemtype, type)
-                .findAll();
-        realm.executeTransaction(realm1 -> realmList.deleteAllFromRealm());
-    }
-
-    private void addItemsToDB(List<Item> items, String type) {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Item> realmList = realm.where(Item.class).equalTo(itemtype, type)
-                .findAll();
-        if (realmList.size() < 20) {
-            for (int i = 0; i < items.size(); i++) {
-                items.get(i).setItemtype(type);
-            }
-            realm.executeTransaction(realm1 -> realm1.insert(items));
-        }
+        dataSource.deletAllItemsFromDatabase(type);
     }
 
 
     public void getItemsFromBD(String type) {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Item> realmList = realm.where(Item.class).equalTo(itemtype, type)
-                .findAll();
-        List<Item> list = realm.copyFromRealm(realmList);
-        fragment.addNewItems(list, list.size());
+        List<Item> list = dataSource.getItemsFromBD(type);
+        if (list.size() != 0)
+            onSuccesGettingItems(list, list.size());
+
     }
 
-    public void unregister() {
-        fragment = null;
+    public void onSuccesGettingItems(List<Item> list, int total) {
+        fragment.addNewItems(list, total);
+    }
+
+    public void onErrorGettingItems() {
+        fragment.error();
     }
 }
