@@ -1,6 +1,7 @@
 package geogram.example.galleryforyou.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +27,7 @@ import geogram.example.galleryforyou.adapters.ImageListAdapter;
 import geogram.example.galleryforyou.mvp.presenters.ImageListPresenter;
 import geogram.example.galleryforyou.mvp.views.ImageListView;
 import geogram.example.galleryforyou.rest.models.Item;
+import geogram.example.galleryforyou.ui.activityes.SingleImageActivity;
 
 /**
  * Created by geogr on 03.05.2018.
@@ -122,10 +125,6 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
         }
     }
 
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        return false;
-    }
 
     @Override
     public void addNewItems(List<Item> items, int total) {//добавление новых картинок в список при удачном результате запроса
@@ -154,6 +153,34 @@ public class ImagesListFragment extends Fragment implements ImageListView, Swipe
         adapter = null;
         presenter.unregister();
     }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        return gestureDetector.onTouchEvent(motionEvent);
+    }
+
+    final GestureDetector gestureDetector = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener() {
+        //определяем детектор жестов
+        @Override
+        public void onLongPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            int position = listView.getChildLayoutPosition(listView.findChildViewUnder(e.getX(), e.getY()));
+            if (!(position == -1)) {
+                Item item = adapter.getItem(position);//получаем картинку из адаптера по позиции в списке
+                Intent intent = new Intent(getActivity(), SingleImageActivity.class);
+                intent.putExtra("imageFile", item.getFile());
+                intent.putExtra("name", item.getName());
+                intent.putExtra("position", ++position);
+                intent.putExtra("total", total);
+                startActivity(intent); //Запускаем активность с определенной картинкой
+            }
+            return super.onSingleTapConfirmed(e);
+        }
+    });
 
     public boolean getInternetConnection() { //проверка интернет соединения
         ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);

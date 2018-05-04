@@ -8,6 +8,7 @@ import geogram.example.galleryforyou.adapters.MainPagerAdapter;
 import geogram.example.galleryforyou.di.modules.ApplicationModule;
 import geogram.example.galleryforyou.di.modules.RestModule;
 import geogram.example.galleryforyou.mvp.presenters.ImageListPresenter;
+import geogram.example.galleryforyou.ui.activityes.SingleImageActivity;
 
 /**
  * Created by geogr on 03.05.2018.
@@ -17,6 +18,6 @@ import geogram.example.galleryforyou.mvp.presenters.ImageListPresenter;
 @Component(modules = {ApplicationModule.class, RestModule.class })
 public interface ApplicationComponent {
     void inject(ImageListPresenter presenter);
-    void inject(MainPagerAdapter adapter);
+    void inject(SingleImageActivity activity);
     void inject(ImageListAdapter adapter);
 }

@@ -8,4 +8,9 @@
     <string name="image_count">Image Count</string>
     <string name="check_internet_connetction">Проверьте подключение к интернету</string>
     <string name="load_error">Ошибка загрузки</string>
+    <string name="from"> из </string>
+    <string name="loadError">Ошибка загрузки изображения</string>
+    <string name="action_load">Скачать фото</string>
+    <string name="errorPermission">Нет разрешения на запись</string>
+    <string name="loadedSuccesfully">Файл успешно скачан и находится в папке:</string>
 </resources>
